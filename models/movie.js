@@ -56,10 +56,14 @@ const movieSchema = new mongoose.Schema({
   nameRU: {
     require: true,
     type: String,
+    minlength: 1,
+    maxlength: 30,
   },
   nameEN: {
     require: true,
     type: String,
+    minlength: 1,
+    maxlength: 30,
   },
 });
 

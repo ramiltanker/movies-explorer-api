@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
-
+const { celebrate, Joi, isCelebrateError } = require('celebrate');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
@@ -33,8 +33,20 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(requestLogger);
 
 // Не нужна авторизация
-app.post('/signup', createUser);
-app.post('/signin', login);
+app.post('/signup', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(6),
+    name: Joi.string().required().min(2).max(30),
+  }),
+}), createUser);
+
+app.post('/signin', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(6),
+  }),
+}), login);
 // Не нужна авторизация
 
 // Роуты которым нужна авторизация
@@ -48,15 +60,15 @@ app.use((req, res, next) => {
   next(new NotFoundError('Запрашиваемый ресурс не найден'));
 });
 
-// app.use((err, req, res, next) => {
-//   if (isCelebrateError(err)) {
-//     return next({
-//       statusCode: 400,
-//       message: err.message,
-//     });
-//   }
-//   return next(err);
-// });
+app.use((err, req, res, next) => {
+  if (isCelebrateError(err)) {
+    return next({
+      statusCode: 400,
+      message: err.message,
+    });
+  }
+  return next(err);
+});
 
 app.use((err, req, res, next) => {
   // если у ошибки нет статуса, выставляем 500
