@@ -37,8 +37,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(requestLogger);
-app.use(helmet());
-app.use(rateLimiter);
+// app.use(helmet());
+// app.use(rateLimiter);
+
 // Не нужна авторизация
 app.post('/signup', celebrate({
   body: Joi.object().keys({
