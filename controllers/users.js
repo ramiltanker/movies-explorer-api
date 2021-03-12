@@ -12,7 +12,7 @@ const getCurrentUser = (req, res, next) => {
       if (!user) {
         throw new NotFoundError('Нет пользователя с таким id');
       }
-      res.status(200).send(user);
+      res.send({ email: user.email, name: user.name });
     })
     .catch(next);
 };
@@ -27,7 +27,7 @@ const updateUser = (req, res, next) => {
       if (!user) {
         throw new NotFoundError('Нет пользователя с таким id');
       }
-      res.status(200).send(user);
+      res.send({ email: user.email, name: user.name });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -50,7 +50,7 @@ const postUser = (req, res, next) => {
       name,
     }))
     .then((user) => {
-      res.status(200).send({ data: { email: user.email, _id: user._id } });
+      res.send({ data: { email: user.email, _id: user._id } });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {

@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const { celebrate, Joi, isCelebrateError } = require('celebrate');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-
+const helmet = require('helmet');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const NotFoundError = require('./errors/not-found-err.js');
@@ -13,12 +13,18 @@ const auth = require('./middlewares/auth.js');
 const userController = require('./controllers/users.js');
 const login = require('./controllers/login.js');
 
+const rateLimiter = require('./middlewares/rateLimiter');
+
 const createUser = userController.postUser;
+
+const errorHandler = require('./middlewares/errorHandler');
+
+const { MONGO_DB_ADDRESS } = process.env;
 
 const app = express();
 const PORT = 3000;
 
-mongoose.connect('mongodb://localhost:27017/moviedb', {
+mongoose.connect(MONGO_DB_ADDRESS, {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,
@@ -31,7 +37,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(requestLogger);
-
+app.use(helmet());
+app.use(rateLimiter);
 // Не нужна авторизация
 app.post('/signup', celebrate({
   body: Joi.object().keys({
@@ -70,19 +77,7 @@ app.use((err, req, res, next) => {
   return next(err);
 });
 
-app.use((err, req, res, next) => {
-  // если у ошибки нет статуса, выставляем 500
-  const { statusCode = 500, message } = err;
-  res
-    .status(statusCode)
-    .send({
-      // проверяем статус и выставляем сообщение в зависимости от него
-      message: statusCode === 500
-        ? 'На сервере произошла ошибка'
-        : message,
-    });
-  next();
-});
+app.use(errorHandler);
 
 app.listen(PORT, () => {
 

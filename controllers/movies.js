@@ -9,7 +9,7 @@ const OwnerError = require('../errors/owner-err.js');
 const getMovies = (req, res, next) => {
   Movie.find({})
     .then((movies) => {
-      res.status(200).send(movies);
+      res.send(movies);
     })
     .catch((err) => {
       next(new InternalServerError(`${err.message}`));
@@ -37,7 +37,7 @@ const postMovie = (req, res, next) => {
     movieId,
   })
     .then((movie) => {
-      res.status(200).send(movie);
+      res.send(movie);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -58,9 +58,9 @@ const deleteMovie = (req, res, next) => {
       if (movie.owner.toString() !== owner) {
         throw new OwnerError('Нельзя удалить фильм другого пользователя');
       } else {
-        Movie.findByIdAndDelete(req.params.movieId)
+        Movie.findByIdAndRemove(req.params.movieId)
           .then(() => {
-            res.status(200).send('Фильм успешно удалён');
+            res.send({ message: `Фильм ${movie.nameRU}/${movie.nameEN} успешно удалён` });
           })
           .catch(next);
       }
