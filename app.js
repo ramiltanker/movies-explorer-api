@@ -14,14 +14,12 @@ const login = require('./controllers/login.js');
 
 const createUser = userController.postUser;
 
-const errorHandler = require('./middlewares/errorHandler');
-
-const { MONGO_DB_ADDRESS } = process.env;
+// const { MONGO_DB_ADDRESS } = process.env;
 
 const app = express();
 const PORT = 3000;
 
-mongoose.connect(MONGO_DB_ADDRESS, {
+mongoose.connect('mongodb://localhost:27017/moviedb', {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,
@@ -73,8 +71,19 @@ app.use((err, req, res, next) => {
   return next(err);
 });
 
-app.use(errorHandler);
-
+app.use((err, req, res, next) => {
+  // если у ошибки нет статуса, выставляем 500
+  const { statusCode = 500, message } = err;
+  res
+    .status(statusCode)
+    .send({
+      // проверяем статус и выставляем сообщение в зависимости от него
+      message: statusCode === 500
+        ? 'На сервере произошла ошибка'
+        : message,
+    });
+  next();
+});
 app.listen(PORT, () => {
 
 });
