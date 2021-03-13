@@ -4,7 +4,6 @@ const mongoose = require('mongoose');
 const { celebrate, Joi, isCelebrateError } = require('celebrate');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const helmet = require('helmet');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const NotFoundError = require('./errors/not-found-err.js');
@@ -12,8 +11,6 @@ const NotFoundError = require('./errors/not-found-err.js');
 const auth = require('./middlewares/auth.js');
 const userController = require('./controllers/users.js');
 const login = require('./controllers/login.js');
-
-const rateLimiter = require('./middlewares/rateLimiter');
 
 const createUser = userController.postUser;
 
@@ -30,11 +27,9 @@ mongoose.connect(MONGO_DB_ADDRESS, {
   useFindAndModify: false,
   useUnifiedTopology: true,
 });
-
-app.use(cors());
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors());
 
 app.use(requestLogger);
 // app.use(helmet());
