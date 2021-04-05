@@ -14,7 +14,7 @@ const login = require('./controllers/login.js');
 
 const createUser = userController.postUser;
 
-// const { MONGO_DB_ADDRESS } = process.env;
+const errorHandler = require('./middlewares/errorHandler.js');
 
 const app = express();
 const PORT = 3000;
@@ -25,9 +25,11 @@ mongoose.connect('mongodb://localhost:27017/moviedb', {
   useFindAndModify: false,
   useUnifiedTopology: true,
 });
+
+app.use(cors());
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors());
 
 app.use(requestLogger);
 // app.use(helmet());
@@ -61,29 +63,8 @@ app.use((req, res, next) => {
   next(new NotFoundError('Запрашиваемый ресурс не найден'));
 });
 
-app.use((err, req, res, next) => {
-  if (isCelebrateError(err)) {
-    return next({
-      statusCode: 400,
-      message: err.message,
-    });
-  }
-  return next(err);
-});
+app.use(errorHandler);
 
-app.use((err, req, res, next) => {
-  // если у ошибки нет статуса, выставляем 500
-  const { statusCode = 500, message } = err;
-  res
-    .status(statusCode)
-    .send({
-      // проверяем статус и выставляем сообщение в зависимости от него
-      message: statusCode === 500
-        ? 'На сервере произошла ошибка'
-        : message,
-    });
-  next();
-});
 app.listen(PORT, () => {
 
 });

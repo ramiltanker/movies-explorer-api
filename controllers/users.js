@@ -12,7 +12,7 @@ const getCurrentUser = (req, res, next) => {
       if (!user) {
         throw new NotFoundError('Нет пользователя с таким id');
       }
-      res.send({ email: user.email, name: user.name });
+      res.send({ email: user.email, name: user.name, _id: user._id });
     })
     .catch(next);
 };

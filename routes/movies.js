@@ -23,8 +23,8 @@ router.post('/', celebrate({
     trailer: Joi.string().required().custom(urlValidator),
     thumbnail: Joi.string().required().custom(urlValidator),
     movieId: Joi.number().required(),
-    nameRU: Joi.string().required().min(1).max(30),
-    nameEN: Joi.string().required().min(1).max(30),
+    nameRU: Joi.string().required().min(1).max(100),
+    nameEN: Joi.string().required().min(1).max(100),
   }),
 }), controller.postMovie);
 
