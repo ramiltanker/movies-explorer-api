@@ -6,8 +6,8 @@ router.get('/me', controller.getCurrentUser);
 
 router.patch('/me', celebrate({
   body: Joi.object().keys({
-    name: Joi.string().min(2).max(30),
-    email: Joi.string().min(2).max(30),
+    name: Joi.string().min(1).max(30),
+    email: Joi.string(),
   }),
 }), controller.updateUser);
 
