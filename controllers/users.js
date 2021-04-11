@@ -30,6 +30,7 @@ const updateUser = (req, res, next) => {
       res.send({ email: user.email, name: user.name });
     })
     .catch((err) => {
+      console.log(err);
       if (err.name === 'CastError') {
         next(new BadRequest('Переданы некорректные данные в метод обновления данных пользователя'));
       }

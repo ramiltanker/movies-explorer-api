@@ -7,7 +7,9 @@ const OwnerError = require('../errors/owner-err.js');
 // const ConflictError = require('../errors/conflict-err.js');
 
 const getMovies = (req, res, next) => {
-  Movie.find({})
+  const owner = req.user._id;
+
+  Movie.find({ owner })
     .then((movies) => {
       res.send(movies);
     })
