@@ -8,7 +8,7 @@ const OwnerError = require('../errors/owner-err.js');
 
 const getMovies = (req, res, next) => {
   const owner = req.user._id;
-
+  console.log(req.user);
   Movie.find({ owner })
     .then((movies) => {
       res.send(movies);
